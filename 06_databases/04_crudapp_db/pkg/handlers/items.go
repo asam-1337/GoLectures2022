@@ -14,8 +14,6 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:generate mockgen -source=items.go -destination=items_mock.go -package=handlers ItemRepo
-
 type ItemsHandler struct {
 	Tmpl      *template.Template
 	ItemsRepo items.ItemRepo

@@ -18,7 +18,6 @@ func (it *Item) SetUpdated(val uint32) {
 }
 
 //go:generate mockgen -source=item.go -destination=repo_mock.go -package=items ItemRepo
-
 type ItemRepo interface {
 	GetAll() ([]*Item, error)
 	GetByID(int64) (*Item, error)

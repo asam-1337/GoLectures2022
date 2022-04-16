@@ -89,8 +89,8 @@ func main() {
 		w.Write([]byte(body))
 	})
 
-	fmt.Println("starting server at :8888")
-	http.ListenAndServe(":8888", nil)
+	fmt.Println("starting server at :8080")
+	http.ListenAndServe(":8080", nil)
 }
 
 //PanicOnErr panics on error

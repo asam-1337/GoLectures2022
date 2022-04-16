@@ -129,8 +129,8 @@ func main() {
 	http.HandleFunc("/", mainPage)
 	http.HandleFunc("/upload", uploadPage)
 
-	fmt.Println("starting server at :8888")
-	http.ListenAndServe(":8888", nil)
+	fmt.Println("starting server at :8080")
+	http.ListenAndServe(":8080", nil)
 }
 
 // никогда так не делайте!

@@ -30,7 +30,7 @@ func TestItemsHandlerList(t *testing.T) {
 	}
 
 	resultItems := []*items.Item{
-		{ID: 1, Title: "database/sql"},
+		{ID: 1, Title: "some item"},
 	}
 
 	// тут мы записываем последовтаельность вызовов и результат
@@ -44,8 +44,8 @@ func TestItemsHandlerList(t *testing.T) {
 	resp := w.Result()
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	img := `database/sql`
-	if !bytes.Contains(body, []byte(img)) {
+	title := `some item`
+	if !bytes.Contains(body, []byte(title)) {
 		t.Errorf("no text found")
 		return
 	}

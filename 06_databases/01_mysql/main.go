@@ -103,15 +103,8 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	// в целям упрощения примера пропущена валидация
 	result, err := h.DB.Exec(
-		"UPDATE items SET"+
-			"`title` = ?"+
-			",`description` = ?"+
-			",`updated` = ?"+
-			"WHERE id = ?",
-		r.FormValue("title"),
-		r.FormValue("description"),
-		"user",
-		id,
+		"UPDATE items SET `title` = ?, `description` = ?, `updated` = ? WHERE id = ?",
+		r.FormValue("title"), r.FormValue("description"), "user", id,
 	)
 	__err_panic(err)
 

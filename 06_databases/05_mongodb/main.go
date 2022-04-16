@@ -153,16 +153,16 @@ func main() {
 	// для монги нет такого красивого дампа SQL, так что я вставляю демо-запись если коллекция пуста
 	if n, _ := collection.Count(); n == 0 {
 		collection.Insert(&Item{
-			bson.NewObjectId(),
-			"mongodb",
-			"Рассказать про монгу",
-			"",
+			Id:          bson.NewObjectId(),
+			Title:       "mongodb",
+			Description: "Рассказать про монгу",
+			Updated:     "",
 		})
 		collection.Insert(&Item{
-			bson.NewObjectId(),
-			"redis",
-			"Рассказать про redis",
-			"rvasily",
+			Id:          bson.NewObjectId(),
+			Title:       "redis",
+			Description: "Рассказать про redis",
+			Updated:     "rvasily",
 		})
 	}
 
@@ -181,8 +181,8 @@ func main() {
 	r.HandleFunc("/items/{id}", handlers.Update).Methods("POST")
 	r.HandleFunc("/items/{id}", handlers.Delete).Methods("DELETE")
 
-	fmt.Println("starting server at :8888")
-	http.ListenAndServe(":8888", r)
+	fmt.Println("starting server at :8080")
+	http.ListenAndServe(":8080", r)
 }
 
 // не используйте такой код в прошакшене

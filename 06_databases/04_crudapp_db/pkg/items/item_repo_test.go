@@ -21,8 +21,7 @@ func TestGetByID(t *testing.T) {
 	var elemID int64 = 1
 
 	// good query
-	rows := sqlmock.
-		NewRows([]string{"id", "title", "updated", "description"})
+	rows := sqlmock.NewRows([]string{"id", "title", "updated", "description"})
 	expect := []*Item{
 		{uint32(elemID), "title", "desct", sql.NullString{}},
 	}

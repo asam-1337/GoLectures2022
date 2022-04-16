@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/bradfitz/gomemcache/memcache"
 )
 
@@ -17,14 +18,14 @@ func main() {
 		Expiration: 3,
 	})
 
-	memcacheClient.Increment("habrTag", 1)
+	memcacheClient.Increment(mkey, 1)
 
 	item, err := memcacheClient.Get(mkey)
 	if err != nil && err != memcache.ErrCacheMiss {
 		fmt.Println("MC error", err)
 	}
 
-	fmt.Printf("mc value %#v\n", item)
+	fmt.Printf("mc value %#v\n", string(item.Value))
 
 	memcacheClient.Delete(mkey)
 
@@ -32,5 +33,4 @@ func main() {
 	if err == memcache.ErrCacheMiss {
 		fmt.Println("record not found in MC")
 	}
-
 }
