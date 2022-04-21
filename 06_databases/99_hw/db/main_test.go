@@ -87,6 +87,10 @@ func CleanupTestApis(db *sql.DB) {
 
 func TestApis(t *testing.T) {
 	db, err := sql.Open("mysql", DSN)
+	if err != nil {
+		panic(err)
+	}
+
 	err = db.Ping()
 	if err != nil {
 		panic(err)
@@ -97,7 +101,7 @@ func TestApis(t *testing.T) {
 	// возможно вам будет удобно закомментировать это чтобы смотреть результат после теста
 	defer CleanupTestApis(db)
 
-	handler, err := NewDbExplorer(db) //nolint:typecheck
+	handler, err := NewDBExplorer(db) //nolint:typecheck
 	if err != nil {
 		panic(err)
 	}
@@ -503,7 +507,6 @@ func TestApis(t *testing.T) {
 func runCases(t *testing.T, ts *httptest.Server, db *sql.DB, cases []Case) {
 	for idx, item := range cases {
 		var (
-			err      error
 			result   interface{}
 			expected interface{}
 			req      *http.Request
@@ -512,20 +515,28 @@ func runCases(t *testing.T, ts *httptest.Server, db *sql.DB, cases []Case) {
 		caseName := fmt.Sprintf("case %d: [%s] %s %s", idx, item.Method, item.Path, item.Query)
 
 		// если у вас случилась это ошибка - значит вы не делаете где-то rows.Close и у вас текут соединения с базой
-		// если такое случилось на первом тесте - значит вы не закрываете коннект где-то при иницаилизации в NewDbExplorer
+		// если такое случилось на первом тесте - значит вы не закрываете коннект где-то при иницаилизации в NewDBExplorer
 		if db.Stats().OpenConnections != 1 {
 			t.Fatalf("[%s] you have %d open connections, must be 1", caseName, db.Stats().OpenConnections)
 		}
 
 		if item.Method == "" || item.Method == http.MethodGet {
-			req, err = http.NewRequest(item.Method, ts.URL+item.Path+"?"+item.Query, nil)
+			var errNewReq error
+			req, errNewReq = http.NewRequest(item.Method, ts.URL+item.Path+"?"+item.Query, nil)
+			if errNewReq != nil {
+				panic(errNewReq)
+			}
 		} else {
-			data, err := json.Marshal(item.Body)
-			if err != nil {
-				panic(err)
+			data, errMarshal := json.Marshal(item.Body)
+			if errMarshal != nil {
+				panic(errMarshal)
 			}
 			reqBody := bytes.NewReader(data)
-			req, err = http.NewRequest(item.Method, ts.URL+item.Path, reqBody)
+			var errNewReq error
+			req, errNewReq = http.NewRequest(item.Method, ts.URL+item.Path, reqBody)
+			if errNewReq != nil {
+				panic(errNewReq)
+			}
 			req.Header.Add("Content-Type", "application/json")
 		}
 
@@ -536,6 +547,10 @@ func runCases(t *testing.T, ts *httptest.Server, db *sql.DB, cases []Case) {
 		}
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("[%s] error readall: %v", caseName, err)
+			continue
+		}
 
 		// fmt.Printf("[%s] body: %s\n", caseName, string(body))
 		if item.Status == 0 {
@@ -558,7 +573,15 @@ func runCases(t *testing.T, ts *httptest.Server, db *sql.DB, cases []Case) {
 		// этот маленький грязный хак конвертит данные сначала в json, а потом обратно в interface - получаем совместимые результаты
 		// не используйте это в продакшен-коде - надо явно писать что ожидается интерфейс или использовать другой подход с точным форматом ответа
 		data, err := json.Marshal(item.Result)
-		json.Unmarshal(data, &expected)
+		if err != nil {
+			t.Fatalf("[%s] cant marshal result json: %v", caseName, err)
+			continue
+		}
+		err = json.Unmarshal(data, &expected)
+		if err != nil {
+			t.Fatalf("[%s] cant unmarshal expected json: %v", caseName, err)
+			continue
+		}
 
 		if !reflect.DeepEqual(result, expected) {
 			t.Fatalf("[%s] results not match\nGot : %#v\nWant: %#v", caseName, result, expected)

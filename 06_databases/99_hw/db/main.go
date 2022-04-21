@@ -5,6 +5,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -20,16 +21,21 @@ var (
 
 func main() {
 	db, err := sql.Open("mysql", DSN)
+	if err != nil {
+		panic(err)
+	}
 	err = db.Ping() // вот тут будет первое подключение к базе
 	if err != nil {
 		panic(err)
 	}
 
-	handler, err := NewDbExplorer(db) //nolint:typecheck
+	handler, err := NewDBExplorer(db) //nolint:typecheck
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println("starting server at :8082")
-	http.ListenAndServe(":8082", handler)
+	if err := http.ListenAndServe(":8082", handler); err != nil {
+		log.Printf("error listenAndServer: %v", err)
+	}
 }
