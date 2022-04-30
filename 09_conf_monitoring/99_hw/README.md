@@ -78,5 +78,5 @@ SLA данного сервиса: ~5ms на ответ и 0% статусов 5
 в ваш сервис в 10 потоков. Этот образ можете поднять точно так же у себя
 локально:
 
-- Для linux: `docker run --rm --network=host -e "SERVER_ADDR=localhost:8000" ndrq/msu-go-client /usr/local/bin/client`.
-- Для mac/windows: `docker run --rm -e "SERVER_ADDR=host.docker.internal:8000" ndrq/msu-go-client /usr/local/bin/client`
+- Для linux: `docker run --rm --network=host -e "SERVER_ADDR=localhost:8000" skinass/edu-vk-client /usr/local/bin/client`.
+- Для mac/windows: `docker run --rm -e "SERVER_ADDR=host.docker.internal:8000" skinass/edu-vk-client /usr/local/bin/client`
