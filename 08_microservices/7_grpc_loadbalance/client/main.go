@@ -99,6 +99,5 @@ func runOnlineServiceDiscovery(nameResolver *manual.Resolver) {
 			servers = append(servers, resolver.Address{Addr: addr})
 		}
 		nameResolver.CC.NewAddress(servers)
-		// nameResolver.UpdateState(resolver.State{Addresses: servers})
 	}
 }

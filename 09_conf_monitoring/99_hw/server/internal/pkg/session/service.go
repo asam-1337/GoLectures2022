@@ -13,7 +13,7 @@ func NewService() domain.SessionService {
 }
 
 func (s service) CheckSession(headers http.Header) (domain.Session, error) {
-	req, err := http.NewRequest(http.MethodGet, "http://185.241.194.25:17000/int/CheckSession", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://vk-golang.ru:17000/int/CheckSession", nil)
 	if err != nil {
 		return domain.Session{}, err
 	}

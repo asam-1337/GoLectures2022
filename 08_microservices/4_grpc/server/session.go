@@ -17,6 +17,7 @@ const sessKeyLen = 10
 
 type SessionManager struct {
 	session.UnimplementedAuthCheckerServer
+
 	mu       sync.RWMutex
 	sessions map[string]*session.Session
 }

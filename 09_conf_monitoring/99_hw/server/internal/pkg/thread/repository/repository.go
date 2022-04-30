@@ -17,7 +17,7 @@ func (r repository) Create(thread domain.Thread) error {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, "http://185.241.194.25:15000/thread", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest(http.MethodPost, "http://vk-golang.ru:15000/thread", bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (r repository) Create(thread domain.Thread) error {
 }
 
 func (r repository) Get(id string) (domain.Thread, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://185.241.194.25:15000/thread?id=%s", id), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://vk-golang.ru:15000/thread?id=%s", id), nil)
 	if err != nil {
 		return domain.Thread{}, err
 	}

@@ -21,7 +21,7 @@ func (r repository) Create(comment domain.Comment) error {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, "http://185.241.194.25:16000/comment", bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest(http.MethodPost, "http://vk-golang.ru:16000/comment", bytes.NewBuffer(reqBody))
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func (r repository) Create(comment domain.Comment) error {
 func (r repository) Like(commentID string) error {
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("http://185.241.194.25:16000/comment/like?cid=%s", commentID),
+		fmt.Sprintf("http://vk-golang.ru:16000/comment/like?cid=%s", commentID),
 		nil,
 	)
 	if err != nil {

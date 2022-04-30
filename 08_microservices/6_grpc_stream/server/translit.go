@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"time"
 
 	"gitlab.com/mailru-go/lectures-2022-1/08_microservices/6_grpc_stream/translit"
 
@@ -13,6 +14,15 @@ type TrServer struct {
 }
 
 func (srv *TrServer) EnRu(inStream translit.Transliteration_EnRuServer) error {
+	go func() {
+
+		for {
+			inStream.Send(&translit.Word{
+				Word: "stat",
+			})
+			time.Sleep(time.Second)
+		}
+	}()
 	for {
 		// time.Sleep(1 * time.Second)
 		inWord, err := inStream.Recv()
@@ -27,6 +37,7 @@ func (srv *TrServer) EnRu(inStream translit.Transliteration_EnRuServer) error {
 		}
 		fmt.Println(inWord.Word, "->", out.Word)
 		inStream.Send(out)
+
 	}
 	return nil
 }
