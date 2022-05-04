@@ -36,8 +36,8 @@ linters-settings:
 linters:
   disable-all: true
   enable:
-#    - bodyclose
-    - dupl
+    # - bodyclose
+    # - dupl
     - errcheck
     - goconst
     - gocritic
