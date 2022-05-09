@@ -25,12 +25,12 @@ type BizServis struct {
 	UnimplementedAdminServer
 
 	stat Stater
-	Acl  map[string][]string
+	acl  map[string][]string
 	ml   myLogger
 }
 
 func NewBizServer(acl map[string][]string) *BizServis {
-	bs := &BizServis{Acl: acl}
+	bs := &BizServis{acl: acl}
 	bs.stat.Init()
 	bs.ml.Init()
 	return bs
@@ -87,7 +87,7 @@ func authInterceptor(
 		return nil, status.Errorf(codes.Unauthenticated, codes.Unauthenticated.String())
 	}
 
-	if valid(serv.Acl, consumer, info.FullMethod) {
+	if valid(serv.acl, consumer, info.FullMethod) {
 		event := &Event{Consumer: consumer, Method: info.FullMethod}
 		p, ok := peer.FromContext(ctx)
 		if ok {
@@ -116,7 +116,7 @@ func authStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.Str
 		return status.Errorf(codes.Unauthenticated, codes.Unauthenticated.String())
 	}
 
-	if valid(serv.Acl, consumer, info.FullMethod) {
+	if valid(serv.acl, consumer, info.FullMethod) {
 		event := &Event{Consumer: consumer, Method: info.FullMethod}
 		p, ok := peer.FromContext(ss.Context())
 		if ok {
