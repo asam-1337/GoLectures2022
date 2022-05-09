@@ -29,20 +29,20 @@ type BizServis struct {
 	ml   myLogger
 }
 
-func NewBizServer(Acl map[string][]string) *BizServis {
-	bs := &BizServis{Acl: Acl}
+func NewBizServer(acl map[string][]string) *BizServis {
+	bs := &BizServis{Acl: acl}
 	bs.stat.Init()
 	bs.ml.Init()
 	return bs
 }
 
-func StartMyMicroservice(ctx context.Context, addr, ACLData string) error {
+func StartMyMicroservice(ctx context.Context, addr, aclData string) error {
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		return fmt.Errorf("cant listen on port : %w", err)
 	}
 	m := make(map[string][]string)
-	err = json.Unmarshal([]byte(ACLData), &m)
+	err = json.Unmarshal([]byte(aclData), &m)
 	if err != nil {
 		lis.Close()
 		return fmt.Errorf("%w : StartMyMicroservice", err)
@@ -55,6 +55,7 @@ func StartMyMicroservice(ctx context.Context, addr, ACLData string) error {
 	bizServ := NewBizServer(m)
 	RegisterAdminServer(server, bizServ)
 	RegisterBizServer(server, bizServ)
+	//nolint:errcheck
 	go server.Serve(lis)
 	go func() {
 		for {
@@ -152,7 +153,7 @@ type myLogger struct {
 func (ml *myLogger) Init() {
 	ml.id = 0
 	ml.mu = &sync.RWMutex{}
-	ml.logs = make(map[int64]chan *Event, 0)
+	ml.logs = make(map[int64]chan *Event)
 }
 
 func (ml *myLogger) NewLoger() (chan *Event, int64) {
@@ -212,8 +213,8 @@ type Stater struct {
 func (s *Stater) Init() {
 	s.id = 0
 	s.mu = &sync.Mutex{}
-	s.statByConsumer = make(map[uint64]map[string]uint64, 0)
-	s.statByMethod = make(map[uint64]map[string]uint64, 0)
+	s.statByConsumer = make(map[uint64]map[string]uint64)
+	s.statByMethod = make(map[uint64]map[string]uint64)
 	s.StatFirstTry = true
 }
 
