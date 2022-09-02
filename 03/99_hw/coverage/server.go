@@ -124,7 +124,7 @@ func sorting(query url.Values, users *Rows) error {
 	if orderBy == OrderByAsIs {
 		return nil
 	}
-	if orderBy != OrderByAsc || orderBy != OrderByDesc {
+	if orderBy != OrderByAsc {
 		return fmt.Errorf("bad_request")
 	}
 
@@ -191,19 +191,8 @@ func SearchServer(w http.ResponseWriter, r *http.Request) {
 	dataJSON, _ := json.Marshal(users)
 
 	w.WriteHeader(http.StatusOK)
-	write, err := w.Write(dataJSON)
+	_, err = w.Write(dataJSON)
 	if err != nil {
 		return
-	}
-}
-
-func main() {
-	u, err := reader()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	for _, i := range u.List {
-		fmt.Println(i.FirstName)
 	}
 }

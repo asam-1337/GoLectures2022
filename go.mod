@@ -1,4 +1,4 @@
-module gitlab.com/mailru-go/lectures-2022-1
+module github.com/asam-1337/GoLectures2022
 
 go 1.15
 
