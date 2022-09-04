@@ -27,7 +27,7 @@ go mod init  gitlab.com/mailru-go/lectures-2022-1/04_net2/05_bot
 // https://api.telegram.org/bot1953480583:AAEU7eBaZnCUt525oUkCMRCQxK1TJmaoVd4/getUpdates
 
 const (
-	BotToken   = "716297644:AAGKxj8hkygdxP_1pa6a-LLIkiY4FG99Hss" // "1953480583:AAEU7eBaZnCUt525oUkCMRCQxK1TJmaoVd4"
+	BotToken   = "5620922394:AAHo-t5jlKsb5WRT3QC4fi0W4xQBW3PRDTA" //"716297644:AAGKxj8hkygdxP_1pa6a-LLIkiY4FG99Hss" // "1953480583:AAEU7eBaZnCUt525oUkCMRCQxK1TJmaoVd4"  5620922394:AAHo-t5jlKsb5WRT3QC4fi0W4xQBW3PRDTA
 	WebhookURL = "https://go-2022-bot.herokuapp.com"
 )
 
