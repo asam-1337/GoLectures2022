@@ -62,6 +62,7 @@ type Row struct {
 	About     string `xml:"about" json:"About"`
 	FirstName string `xml:"first_name" json:"-"`
 	LastName  string `xml:"last_name" json:"-"`
+	Gender    string `xml:"gender" json:"Gender"`
 	Name      string `json:"Name"`
 }
 
@@ -91,27 +92,30 @@ func finder(raws *Rows, substr string) {
 	raws = users
 }
 
-func find(query url.Values, users *Rows) error {
+func find(query url.Values, users *Rows) {
 	substr := query.Get("query")
 	if substr == "" {
-		return nil
+		return
 	}
 	finder(users, substr)
-	return nil
 }
 
 func reader() (*Rows, error) {
 	users := &Rows{}
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("read file error: %w", err)
 	}
 
 	err = xml.Unmarshal(data, users)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unmarshal error: %w", err)
 	}
 	return users, nil
+}
+
+func (e SearchErrorResponse) Err() string {
+	return `{"error": "` + e.Error + `"}`
 }
 
 func sorting(query url.Values, users *Rows) error {
@@ -119,13 +123,13 @@ func sorting(query url.Values, users *Rows) error {
 	orderByString := query.Get("order_by")
 	orderBy, err := strconv.Atoi(orderByString)
 	if err != nil {
-		return fmt.Errorf("error with strconv")
+		return fmt.Errorf("strconv error: %w", err)
 	}
 	if orderBy == OrderByAsIs {
 		return nil
 	}
 	if orderBy != OrderByAsc {
-		return fmt.Errorf("bad_request")
+		return fmt.Errorf(`OrderField invalid`)
 	}
 
 	IDSort := func(i, j *Row) bool {
@@ -157,7 +161,7 @@ func sorting(query url.Values, users *Rows) error {
 		NewMultiSorter(NameSort).Sort(users.List)
 	case "":
 	default:
-		return fmt.Errorf("bad_request")
+		return fmt.Errorf("bad request params")
 	}
 	return nil
 }
@@ -171,28 +175,25 @@ func SearchServer(w http.ResponseWriter, r *http.Request) {
 
 	users, err := reader()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, fmt.Errorf("read error: %w", err).Error(), http.StatusInternalServerError)
 		return
 	}
 	users.NameUpdate()
-
-	err = find(r.URL.Query(), users)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	find(r.URL.Query(), users)
 
 	err = sorting(r.URL.Query(), users)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, SearchErrorResponse{err.Error()}.Err(), http.StatusBadRequest)
 		return
 	}
 
-	dataJSON, _ := json.Marshal(users)
+	dataJSON, err := json.Marshal(users.List)
+	if err != nil {
+		http.Error(w, fmt.Errorf("json marshal error: %w", err).Error(), http.StatusInternalServerError)
+	}
 
-	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(dataJSON)
 	if err != nil {
-		return
+		http.Error(w, fmt.Errorf("json write error: %w", err).Error(), http.StatusInternalServerError)
 	}
 }
