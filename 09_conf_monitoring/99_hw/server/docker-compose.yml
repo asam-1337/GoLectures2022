@@ -1,0 +1,14 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./prometheus/:/etc/prometheus/"
+    restart: always
+  grafana:
+    image: grafana/grafana:7.3.0
+    links:
+      - prometheus:prometheus
+    ports:
+      - 3000:3000
